@@ -1,0 +1,88 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		fmt.Print("Введите выражение: ")
+		scanner.Scan()
+		input := scanner.Text()
+
+		result, err := expression(input)
+		if err != nil {
+			fmt.Println("Ошибка:", err)
+		} else {
+			fmt.Println("Результат:", result)
+		}
+	}
+}
+
+func expression(input string) (string, error) {
+	tokens := strings.Fields(input)
+
+	if strings.Contains(input, "\"") == false {
+		return "", fmt.Errorf("Значения строк передаваемых в выражении выделяются двойными кавычками")
+	}
+
+	//if len(tokens) != 3 {
+	//	return "", fmt.Errorf("Неверное количество символов в выражении")
+	//}
+
+	arg1, arg2 := tokens[0], tokens[2]
+
+	_, err := strconv.Atoi(arg1)
+	if err == nil {
+		return "", fmt.Errorf("Выражение должно начинаться со строки")
+	}
+
+	switch tokens[1] {
+	case "+":
+		return arg1[:len(arg1)-1] + arg2[1:], nil
+	case "-":
+
+		arg1 = strings.Trim(arg1, "\"")
+		arg2 = strings.Trim(arg2, "\"")
+		result := strings.Replace(arg1, arg2, "", 1)
+		return "\"" + result + "\"", nil
+
+	case "*":
+		n, err := strconv.Atoi(arg2)
+		if err != nil {
+			return "", fmt.Errorf("Неверное число в выражении")
+		}
+		if n < 1 || n > 10 {
+			return "", fmt.Errorf("Число должно быть от 1 до 10")
+		}
+		result := strings.Repeat(arg1, n)
+		if len(result) > 40 {
+			return result[:40] + "...", nil
+		}
+		return "\"" + strings.ReplaceAll(result, "\"", "") + "\"", nil
+	case "/":
+		n, err := strconv.Atoi(arg2)
+		if err != nil {
+			return "", fmt.Errorf("Неверное число в выражении")
+		}
+		if n < 1 || n > 10 {
+			return "", fmt.Errorf("Число должно быть от 1 до 10")
+		}
+		if len(arg1) <= n {
+			return "", fmt.Errorf("Нельзя делить строку на число, большее или равное ее длине")
+		}
+		result := arg1[:len(arg1)/n]
+		if len(result) > 40 {
+			return result[:40] + "...", nil
+		}
+		return "\"" + strings.ReplaceAll(result, "\"", "") + "\"", nil
+	default:
+		return "", fmt.Errorf("Неподдерживаемая операция")
+	}
+}
