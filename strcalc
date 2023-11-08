@@ -32,10 +32,6 @@ func expression(input string) (string, error) {
 		return "", fmt.Errorf("Значения строк передаваемых в выражении выделяются двойными кавычками")
 	}
 
-	//if len(tokens) != 3 {
-	//	return "", fmt.Errorf("Неверное количество символов в выражении")
-	//}
-
 	arg1, arg2 := tokens[0], tokens[2]
 
 	_, err := strconv.Atoi(arg1)
@@ -43,9 +39,17 @@ func expression(input string) (string, error) {
 		return "", fmt.Errorf("Выражение должно начинаться со строки")
 	}
 
+	if len(arg1) > 10 || len(arg2) > 10 {
+		return "", fmt.Errorf("Строка должна быть длинной не более 10 символов")
+	}
+
 	switch tokens[1] {
 	case "+":
-		return arg1[:len(arg1)-1] + arg2[1:], nil
+		result := arg1 + arg2
+		if len(result) > 40 {
+			return result[:40] + "...", nil
+		}
+		return "\"" + strings.ReplaceAll(result, "\"", "") + "\"", nil
 	case "-":
 
 		arg1 = strings.Trim(arg1, "\"")
