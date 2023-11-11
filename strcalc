@@ -67,7 +67,7 @@ func expression(input string) (string, error) {
 		}
 		result := strings.Repeat(arg1, n)
 		if len(result) > 40 {
-			return result[:40] + "...", nil
+			return "\"" + strings.ReplaceAll(result[:40]+"...", "\"", "") + "\"", nil
 		}
 		return "\"" + strings.ReplaceAll(result, "\"", "") + "\"", nil
 	case "/":
@@ -83,7 +83,7 @@ func expression(input string) (string, error) {
 		}
 		result := arg1[:len(arg1)/n]
 		if len(result) > 40 {
-			return result[:40] + "...", nil
+			return "\"" + strings.ReplaceAll(result[:40]+"...", "\"", "") + "\"", nil
 		}
 		return "\"" + strings.ReplaceAll(result, "\"", "") + "\"", nil
 	default:
